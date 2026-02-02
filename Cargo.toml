@@ -1,16 +1,16 @@
 # See: https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [package]
-name = "asimov-template-module"
+name = "asimov-whatsapp-module"
 version = "0.0.0"
 authors = ["ASIMOV Community"]
 edition = "2024"
 #rust-version = "1.85"
 description = "ASIMOV module."
-#documentation = "https://docs.rs/asimov-template-module"
+#documentation = "https://docs.rs/asimov-whatsapp-module"
 readme = true
 homepage = "https://github.com/asimov-modules"
-repository = "https://github.com/asimov-modules/asimov-template-module"
+repository = "https://github.com/asimov-modules/asimov-whatsapp-module"
 license = "Unlicense"
 keywords = ["asimov-module", "asimov", "ai"]
 categories = ["command-line-utilities", "text-processing"]              # TODO
@@ -29,6 +29,13 @@ tracing = ["asimov-module/tracing", "clientele?/tracing"]
 
 [dependencies]
 asimov-module = { version = "25.0.0-dev.21", default-features = false }
+whatsapp-rust = "0.2.0"
+wacore-binary = "0.2.0"
+waproto = "0.2.0"
+qrcode = "0.14.1"
+tokio = { version = "1.49.0", features = ["macros", "rt-multi-thread", "signal"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
 
 # Optional integrations:
 clap = { version = "4.5", default-features = false, features = [
@@ -38,6 +45,7 @@ clientele = { version = "0.3.8", default-features = false, features = [
   "clap",
   "std",
 ], optional = true }
+miette = "7.6.0"
 
 [profile.release]
 opt-level = "z"
@@ -45,6 +53,21 @@ strip = true
 lto = "thin"
 
 [[bin]]
-name = "asimov-template-emitter"
-path = "src/emitter/main.rs"
+name = "asimov-whatsapp-authorizer"
+path = "src/bin/authorizer.rs"
+required-features = ["cli"]
+
+[[bin]]
+name = "asimov-whatsapp-cataloger"
+path = "src/bin/cataloger.rs"
+required-features = ["cli"]
+
+[[bin]]
+name = "asimov-whatsapp-emitter"
+path = "src/bin/emitter.rs"
+required-features = ["cli"]
+
+[[bin]]
+name = "asimov-whatsapp-fetcher"
+path = "src/bin/fetcher.rs"
 required-features = ["cli"]
