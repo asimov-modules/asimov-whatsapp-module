@@ -34,51 +34,51 @@ cargo install asimov-whatsapp-module
 
 Check status:
 ```bash
-./asimov-whatsapp-authorizer --status
+asimov-whatsapp-authorizer --status
 ```
 
 Reset local DB:
 ```bash
-./asimov-whatsapp-authorizer --reset
+asimov-whatsapp-authorizer --reset
 ```
 
 Authorize via QR code:Authorize via QR code:
 ```bash
-./asimov-whatsapp-authorizer
+asimov-whatsapp-authorizer
 ```
 
 Authorize via pair code (phone number):
 ```bash
-./asimov-whatsapp-authorizer --phone 15551234567
+asimov-whatsapp-authorizer --phone 15551234567
 ```
 
 `asimov-whatsapp-cataloger` - list all WhatsApp groups and members.
 
 List all groups:
 ```bash
-./asimov-whatsapp-cataloger wa:groups
+asimov-whatsapp-cataloger wa:groups
 ```
 
 List members of a group:
 ```bash
-./asimov-whatsapp-cataloger wa:group/<GROUP_JID>/members
+asimov-whatsapp-cataloger wa:group/<GROUP_JID>/members
 ```
 
 `asimov-whatsapp-fetcher` - fetch WhatsApp contacts and groups metadata.
 
 Fetch group metadata:
 ```bash
-./asimov-whatsapp-fetcher wa:group/<GROUP_JID>
+asimov-whatsapp-fetcher wa:group/<GROUP_JID>
 ```
 
 Fetch contact by phone number:
 ```bash
-./asimov-whatsapp-fetcher wa:contact/<PHONE_DIGITS>
+asimov-whatsapp-fetcher wa:contact/<PHONE_DIGITS>
 ```
 
 Fetch contact by JID (LID or phone JID):
 ```bash
-./asimov-whatsapp-fetcher wa:contact-jid/<JID>
+asimov-whatsapp-fetcher wa:contact-jid/<JID>
 ```
 
 `asimov-whatsapp-emitter` - stream incoming WhatsApp messages to STDOUT as JSONL.
@@ -90,17 +90,17 @@ Examples:
 
 Minimal (inbound only):
 ```bash
-./asimov-whatsapp-emitter | jq .
+asimov-whatsapp-emitter | jq .
 ```
 
 Minimal + include outbound:
 ```bash
-./asimov-whatsapp-emitter --outbound | jq .
+asimov-whatsapp-emitter --outbound | jq .
 ```
 
 Full payload (message + message_info):
 ```bash
-./asimov-whatsapp-emitter --full | jq .
+asimov-whatsapp-emitter --full | jq .
 ```
 
 ## ⚙ Configuration
