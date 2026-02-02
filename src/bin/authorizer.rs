@@ -1,14 +1,14 @@
 // This is free and unencumbered software released into the public domain.
 
 use clientele::{
-    crates::clap::{self, Parser},
     StandardOptions,
     SysexitsError::{self, *},
+    crates::clap::{self, Parser},
 };
-use miette::{miette, IntoDiagnostic as _, Result};
+use miette::{IntoDiagnostic as _, Result, miette};
 
-use qrcode::render::unicode::Dense1x2;
 use qrcode::QrCode;
+use qrcode::render::unicode::Dense1x2;
 
 use std::env;
 use std::io::Write;
@@ -76,7 +76,9 @@ fn resolve_db_path(db: Option<PathBuf>) -> Result<PathBuf> {
     }
     match env::var("WA_DB") {
         Ok(v) if !v.trim().is_empty() => Ok(PathBuf::from(v)),
-        _ => Err(miette!("missing DB path: pass --db PATH or set WA_DB env var")),
+        _ => Err(miette!(
+            "missing DB path: pass --db PATH or set WA_DB env var"
+        )),
     }
 }
 
@@ -112,12 +114,12 @@ fn render_qr_to_stdout(payload: &str) {
             let rendered = qr.render::<Dense1x2>().quiet_zone(true).build();
             println!("{rendered}");
             let _ = std::io::stdout().flush();
-        }
+        },
         Err(e) => {
             eprintln_flush(format!("ERROR: failed to render QR: {e}"));
             println!("QR_PAYLOAD:\n{payload}");
             let _ = std::io::stdout().flush();
-        }
+        },
     }
 }
 
@@ -139,7 +141,7 @@ async fn run(options: Options) -> Result<SysexitsError> {
         Err(e) => {
             eprintln_flush(format!("ERROR: {e}"));
             return Ok(EX_USAGE);
-        }
+        },
     };
 
     if let Err(e) = ensure_parent_dir(&db) {
@@ -179,7 +181,7 @@ async fn run(options: Options) -> Result<SysexitsError> {
                 db.display()
             ));
             return Ok(EX_SOFTWARE);
-        }
+        },
     };
 
     let mut builder = WhatsApp::builder()
@@ -192,13 +194,13 @@ async fn run(options: Options) -> Result<SysexitsError> {
                 match (auth_mode, event) {
                     (AuthMode::QrOnly, Event::PairingQrCode { code, .. }) => {
                         render_qr_to_stdout(&code);
-                    }
+                    },
                     (AuthMode::PairCodeOnly, Event::PairingCode { code, timeout }) => {
                         println!("PAIR CODE: {code}");
                         println!("PAIR CODE TIMEOUT (seconds): {}", timeout.as_secs());
                         let _ = std::io::stdout().flush();
-                    }
-                    _ => {}
+                    },
+                    _ => {},
                 }
             }
         });
@@ -219,7 +221,7 @@ async fn run(options: Options) -> Result<SysexitsError> {
         Err(e) => {
             eprintln_flush(format!("ERROR: failed to build WA runtime: {e}"));
             return Ok(EX_SOFTWARE);
-        }
+        },
     };
 
     let client = wa.client();
@@ -229,7 +231,7 @@ async fn run(options: Options) -> Result<SysexitsError> {
         Err(e) => {
             eprintln_flush(format!("ERROR: failed to start WA runtime: {e}"));
             return Ok(EX_SOFTWARE);
-        }
+        },
     };
 
     let authorized = match client.wait_for_connected(timeout).await {
@@ -237,7 +239,7 @@ async fn run(options: Options) -> Result<SysexitsError> {
         Err(e) => {
             eprintln_flush(format!("ERROR: failed while waiting for login: {e}"));
             false
-        }
+        },
     };
 
     println!("AUTHORIZED: {}", if authorized { "true" } else { "false" });

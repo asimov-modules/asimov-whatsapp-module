@@ -1,11 +1,11 @@
 // This is free and unencumbered software released into the public domain.
 
 use clientele::{
-    crates::clap::{self, Parser},
     StandardOptions,
     SysexitsError::{self, *},
+    crates::clap::{self, Parser},
 };
-use miette::{miette, IntoDiagnostic as _, Result};
+use miette::{IntoDiagnostic as _, Result, miette};
 
 use serde_json::json;
 
@@ -60,7 +60,9 @@ fn resolve_db_path(db: Option<PathBuf>) -> Result<PathBuf> {
     }
     match env::var("WA_DB") {
         Ok(v) if !v.trim().is_empty() => Ok(PathBuf::from(v)),
-        _ => Err(miette!("missing DB path: pass --db PATH or set WA_DB env var")),
+        _ => Err(miette!(
+            "missing DB path: pass --db PATH or set WA_DB env var"
+        )),
     }
 }
 
@@ -91,7 +93,10 @@ fn parse_resource_url(s: &str) -> Result<Target> {
 }
 
 fn stdout_json_line(v: &serde_json::Value) {
-    println!("{}", serde_json::to_string(v).expect("failed to serialize JSON"));
+    println!(
+        "{}",
+        serde_json::to_string(v).expect("failed to serialize JSON")
+    );
     let _ = std::io::stdout().flush();
 }
 
@@ -106,7 +111,7 @@ async fn run(options: Options) -> Result<SysexitsError> {
         Err(e) => {
             eprintln_flush(format!("ERROR: {e}"));
             return Ok(EX_USAGE);
-        }
+        },
     };
 
     let target = match parse_resource_url(&options.resource) {
@@ -114,7 +119,7 @@ async fn run(options: Options) -> Result<SysexitsError> {
         Err(e) => {
             eprintln_flush(format!("ERROR: {e}"));
             return Ok(EX_USAGE);
-        }
+        },
     };
 
     if !db.exists() {
@@ -133,7 +138,7 @@ async fn run(options: Options) -> Result<SysexitsError> {
                 db.display()
             ));
             return Ok(EX_SOFTWARE);
-        }
+        },
     };
 
     let mut wa = match WhatsApp::builder()
@@ -147,7 +152,7 @@ async fn run(options: Options) -> Result<SysexitsError> {
         Err(e) => {
             eprintln_flush(format!("ERROR: failed to build WA runtime: {e}"));
             return Ok(EX_SOFTWARE);
-        }
+        },
     };
 
     let client = wa.client();
@@ -157,7 +162,7 @@ async fn run(options: Options) -> Result<SysexitsError> {
         Err(e) => {
             eprintln_flush(format!("ERROR: failed to start WA runtime: {e}"));
             return Ok(EX_SOFTWARE);
-        }
+        },
     };
 
     let timeout = Duration::from_secs(options.timeout);
@@ -192,34 +197,38 @@ async fn run(options: Options) -> Result<SysexitsError> {
                 }
 
                 EX_OK
-            }
+            },
             Err(e) => {
                 eprintln_flush(format!("ERROR: groups.get_participating failed: {e}"));
                 EX_SOFTWARE
-            }
+            },
         },
 
-        Target::GroupMembers { group_jid } => match client.groups().get_metadata(&group_jid).await {
-            Ok(meta) => {
-                for p in meta.participants.into_iter().take(limit) {
-                    let out = json!({
-                        "kind": "group_member",
-                        "group_jid": meta.id.to_string(),
-                        "group_subject": meta.subject,
-                        "member_jid": p.jid.to_string(),
-                        "member_phone_jid": p.phone_number.as_ref().map(|j| j.to_string()),
-                        "is_admin": p.is_admin,
-                        "contact_fetch_by_lid": format!("wa:contact-jid/{}", p.jid),
-                        "contact_fetch_by_phone_jid": p.phone_number.as_ref().map(|j| format!("wa:contact-jid/{j}")),
-                    });
-                    stdout_json_line(&out);
-                }
+        Target::GroupMembers { group_jid } => {
+            match client.groups().get_metadata(&group_jid).await {
+                Ok(meta) => {
+                    for p in meta.participants.into_iter().take(limit) {
+                        let out = json!({
+                            "kind": "group_member",
+                            "group_jid": meta.id.to_string(),
+                            "group_subject": meta.subject,
+                            "member_jid": p.jid.to_string(),
+                            "member_phone_jid": p.phone_number.as_ref().map(|j| j.to_string()),
+                            "is_admin": p.is_admin,
+                            "contact_fetch_by_lid": format!("wa:contact-jid/{}", p.jid),
+                            "contact_fetch_by_phone_jid": p.phone_number.as_ref().map(|j| format!("wa:contact-jid/{j}")),
+                        });
+                        stdout_json_line(&out);
+                    }
 
-                EX_OK
-            }
-            Err(e) => {
-                eprintln_flush(format!("ERROR: groups.get_metadata({group_jid}) failed: {e}"));
-                EX_SOFTWARE
+                    EX_OK
+                },
+                Err(e) => {
+                    eprintln_flush(format!(
+                        "ERROR: groups.get_metadata({group_jid}) failed: {e}"
+                    ));
+                    EX_SOFTWARE
+                },
             }
         },
     };

@@ -1,11 +1,11 @@
 // This is free and unencumbered software released into the public domain.
 
 use clientele::{
-    crates::clap::{self, Parser},
     StandardOptions,
     SysexitsError::{self, *},
+    crates::clap::{self, Parser},
 };
-use miette::{miette, Result};
+use miette::{Result, miette};
 
 use serde::Serialize;
 use serde_json::json;
@@ -58,12 +58,17 @@ fn resolve_db_path(db: Option<PathBuf>) -> Result<PathBuf> {
     }
     match env::var("WA_DB") {
         Ok(v) if !v.trim().is_empty() => Ok(PathBuf::from(v)),
-        _ => Err(miette!("missing DB path: pass --db PATH or set WA_DB env var")),
+        _ => Err(miette!(
+            "missing DB path: pass --db PATH or set WA_DB env var"
+        )),
     }
 }
 
 fn stdout_json_line<T: Serialize>(v: &T) {
-    println!("{}", serde_json::to_string(v).expect("failed to serialize JSON"));
+    println!(
+        "{}",
+        serde_json::to_string(v).expect("failed to serialize JSON")
+    );
     let _ = std::io::stdout().flush();
 }
 
@@ -203,7 +208,7 @@ async fn run(options: Options) -> Result<SysexitsError> {
         Err(e) => {
             eprintln_flush(format!("ERROR: {e}"));
             return Ok(EX_USAGE);
-        }
+        },
     };
 
     if !db.exists() {
@@ -222,7 +227,7 @@ async fn run(options: Options) -> Result<SysexitsError> {
                 db.display()
             ));
             return Ok(EX_SOFTWARE);
-        }
+        },
     };
 
     let include_outbound = options.outbound;
@@ -259,7 +264,7 @@ async fn run(options: Options) -> Result<SysexitsError> {
         Err(e) => {
             eprintln_flush(format!("ERROR: failed to build WA runtime: {e}"));
             return Ok(EX_SOFTWARE);
-        }
+        },
     };
 
     let client = wa.client();
@@ -269,7 +274,7 @@ async fn run(options: Options) -> Result<SysexitsError> {
         Err(e) => {
             eprintln_flush(format!("ERROR: failed to start WA runtime: {e}"));
             return Ok(EX_SOFTWARE);
-        }
+        },
     };
 
     let timeout = Duration::from_secs(options.timeout);

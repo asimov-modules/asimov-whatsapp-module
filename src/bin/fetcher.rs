@@ -1,13 +1,13 @@
 // This is free and unencumbered software released into the public domain.
 
 use clientele::{
-    crates::clap::{self, Parser},
     StandardOptions,
     SysexitsError::{self, *},
+    crates::clap::{self, Parser},
 };
-use miette::{miette, IntoDiagnostic as _, Result};
+use miette::{IntoDiagnostic as _, Result, miette};
 
-use serde_json::{json, Value as JsonValue};
+use serde_json::{Value as JsonValue, json};
 use std::collections::HashSet;
 use std::env;
 use std::io::Write;
@@ -22,7 +22,11 @@ use whatsapp_rust::transport::{TokioWebSocketTransportFactory, UreqHttpClient};
 use wacore_binary::jid::Jid;
 
 #[derive(Debug, Parser)]
-#[command(name = "asimov-whatsapp-fetcher", disable_help_subcommand = true, long_about)]
+#[command(
+    name = "asimov-whatsapp-fetcher",
+    disable_help_subcommand = true,
+    long_about
+)]
 struct Options {
     #[clap(flatten)]
     flags: StandardOptions,
@@ -52,7 +56,10 @@ fn eprintln_flush(msg: impl AsRef<str>) {
 }
 
 fn stdout_json_line(v: &serde_json::Value) {
-    println!("{}", serde_json::to_string(v).expect("failed to serialize JSON"));
+    println!(
+        "{}",
+        serde_json::to_string(v).expect("failed to serialize JSON")
+    );
     let _ = std::io::stdout().flush();
 }
 
@@ -62,7 +69,9 @@ fn resolve_db_path(db: Option<PathBuf>) -> Result<PathBuf> {
     }
     match env::var("WA_DB") {
         Ok(v) if !v.trim().is_empty() => Ok(PathBuf::from(v)),
-        _ => Err(miette!("missing DB path: pass --db PATH or set WA_DB env var")),
+        _ => Err(miette!(
+            "missing DB path: pass --db PATH or set WA_DB env var"
+        )),
     }
 }
 
@@ -134,7 +143,7 @@ async fn fetch_user_info_and_pfp_best_effort(
                     }));
                     break;
                 }
-            }
+            },
             Err(e) => errors.push(format!("contacts.get_user_info({jid}) error: {e}")),
         }
     }
@@ -149,8 +158,8 @@ async fn fetch_user_info_and_pfp_best_effort(
                     "direct_path": p.direct_path,
                 }));
                 break;
-            }
-            Ok(None) => {}
+            },
+            Ok(None) => {},
             Err(e) => errors.push(format!("contacts.get_profile_picture({jid}) error: {e}")),
         }
     }
@@ -169,7 +178,7 @@ async fn run(options: Options) -> Result<SysexitsError> {
         Err(e) => {
             eprintln_flush(format!("ERROR: {e}"));
             return Ok(EX_USAGE);
-        }
+        },
     };
 
     let target = match parse_resource_url(&options.resource) {
@@ -177,7 +186,7 @@ async fn run(options: Options) -> Result<SysexitsError> {
         Err(e) => {
             eprintln_flush(format!("ERROR: {e}"));
             return Ok(EX_USAGE);
-        }
+        },
     };
 
     if !db.exists() {
@@ -196,7 +205,7 @@ async fn run(options: Options) -> Result<SysexitsError> {
                 db.display()
             ));
             return Ok(EX_SOFTWARE);
-        }
+        },
     };
 
     let mut wa = match WhatsApp::builder()
@@ -210,7 +219,7 @@ async fn run(options: Options) -> Result<SysexitsError> {
         Err(e) => {
             eprintln_flush(format!("ERROR: failed to build WA runtime: {e}"));
             return Ok(EX_SOFTWARE);
-        }
+        },
     };
 
     let client = wa.client();
@@ -220,7 +229,7 @@ async fn run(options: Options) -> Result<SysexitsError> {
         Err(e) => {
             eprintln_flush(format!("ERROR: failed to start WA runtime: {e}"));
             return Ok(EX_SOFTWARE);
-        }
+        },
     };
 
     let timeout = Duration::from_secs(options.timeout);
@@ -246,11 +255,13 @@ async fn run(options: Options) -> Result<SysexitsError> {
                     })).collect::<Vec<_>>(),
                 }));
                 EX_OK
-            }
+            },
             Err(e) => {
-                eprintln_flush(format!("ERROR: groups.get_metadata({group_jid}) failed: {e}"));
+                eprintln_flush(format!(
+                    "ERROR: groups.get_metadata({group_jid}) failed: {e}"
+                ));
                 EX_SOFTWARE
-            }
+            },
         },
 
         Target::ContactByPhone { phone } => {
@@ -299,7 +310,7 @@ async fn run(options: Options) -> Result<SysexitsError> {
                         }));
                         EX_OK
                     }
-                }
+                },
                 Err(e) => {
                     stdout_json_line(&json!({
                         "kind": "contact",
@@ -308,9 +319,9 @@ async fn run(options: Options) -> Result<SysexitsError> {
                         "errors": [format!("contacts.get_info error: {e}")],
                     }));
                     EX_OK
-                }
+                },
             }
-        }
+        },
 
         Target::ContactByJid { jid } => {
             let (ui, pfp, errs) =
@@ -324,7 +335,7 @@ async fn run(options: Options) -> Result<SysexitsError> {
                 "errors": errs,
             }));
             EX_OK
-        }
+        },
     };
 
     let _ = client.disconnect().await;
