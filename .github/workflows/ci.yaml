@@ -30,3 +30,6 @@ jobs:
       actions: read
       contents: read
       pull-requests: write
+    with:
+      formatting_toolchain: nightly
+      building_toolchain: nightly
