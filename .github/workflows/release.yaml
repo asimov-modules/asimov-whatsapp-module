@@ -20,4 +20,4 @@ jobs:
       update_homebrew_tap: true
       update_scoop_bucket: true
       tweet_release: true
-      rust_toolchain: nightly
+      rust_toolchain: nightly-2026-01-21

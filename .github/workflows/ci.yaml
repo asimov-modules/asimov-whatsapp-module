@@ -31,5 +31,5 @@ jobs:
       contents: read
       pull-requests: write
     with:
-      formatting_toolchain: nightly
-      building_toolchain: nightly
+      formatting_toolchain: nightly-2026-01-21
+      building_toolchain: nightly-2026-01-21
