@@ -22,7 +22,7 @@ use whatsapp_rust::transport::{TokioWebSocketTransportFactory, UreqHttpClient};
 use wacore_binary::jid::Jid;
 
 #[derive(Debug, Parser)]
-#[command(name = "asimov-whatsapp-cataloger", long_about)]
+#[command(name = "asimov-whatsapp-lister", long_about)]
 struct Options {
     #[clap(flatten)]
     flags: StandardOptions,
@@ -102,7 +102,7 @@ fn stdout_json_line(v: &serde_json::Value) {
 
 async fn run(options: Options) -> Result<SysexitsError> {
     if options.flags.version {
-        println!("asimov-whatsapp-cataloger {}", env!("CARGO_PKG_VERSION"));
+        println!("asimov-whatsapp-lister {}", env!("CARGO_PKG_VERSION"));
         return Ok(EX_OK);
     }
 

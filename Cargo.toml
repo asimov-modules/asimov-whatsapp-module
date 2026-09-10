@@ -58,8 +58,8 @@ path = "src/bin/authorizer.rs"
 required-features = ["cli"]
 
 [[bin]]
-name = "asimov-whatsapp-cataloger"
-path = "src/bin/cataloger.rs"
+name = "asimov-whatsapp-lister"
+path = "src/bin/lister.rs"
 required-features = ["cli"]
 
 [[bin]]

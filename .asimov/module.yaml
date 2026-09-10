@@ -10,7 +10,7 @@ provides:
   programs:
     - asimov-whatsapp-authorizer
     - asimov-whatsapp-emitter
-    - asimov-whatsapp-cataloger
+    - asimov-whatsapp-lister
     - asimov-whatsapp-fetcher
 
 handles:

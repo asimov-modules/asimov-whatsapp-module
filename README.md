@@ -52,16 +52,16 @@ Authorize via pair code (phone number):
 asimov-whatsapp-authorizer --phone 15551234567
 ```
 
-`asimov-whatsapp-cataloger` - list all WhatsApp groups and members.
+`asimov-whatsapp-lister` - list all WhatsApp groups and members.
 
 List all groups:
 ```bash
-asimov-whatsapp-cataloger wa:groups
+asimov-whatsapp-lister wa:groups
 ```
 
 List members of a group:
 ```bash
-asimov-whatsapp-cataloger wa:group/<GROUP_JID>/members
+asimov-whatsapp-lister wa:group/<GROUP_JID>/members
 ```
 
 `asimov-whatsapp-fetcher` - fetch WhatsApp contacts and groups metadata.
@@ -115,7 +115,7 @@ export WA_DB="$PWD/whatsapp.db"
 ### Installed Binaries
 
 - `asimov-whatsapp-authorizer`
-- `asimov-whatsapp-cataloger`
+- `asimov-whatsapp-lister`
 - `asimov-whatsapp-emitter`
 - `asimov-whatsapp-fetcher`
 
@@ -139,12 +139,12 @@ Options:
   -h, --help               Print help
 ```
 
-### `asimov-whatsapp-cataloger`
+### `asimov-whatsapp-lister`
 
 ```
-asimov-whatsapp-cataloger
+asimov-whatsapp-lister
 
-Usage: asimov-whatsapp-cataloger [OPTIONS] <RESOURCE>
+Usage: asimov-whatsapp-lister [OPTIONS] <RESOURCE>
 
 Arguments:
   <RESOURCE>  Resource URL (e.g. wa:groups, wa:group/<jid>/members)
